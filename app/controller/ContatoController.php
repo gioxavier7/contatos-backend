@@ -5,7 +5,7 @@ require_once __DIR__ . '/../model/Contato.php';
 /**
  * controller responsável pelas requisições de Contatos
  * data: 23/12/2025
- * dev: Giovanna Soares Xavier
+ * dev: Giovanna Soares Xavier profissao
  */
 
 class ContatoController{
@@ -58,23 +58,25 @@ class ContatoController{
     {
         $dados = json_decode(file_get_contents('php://input'), true);
 
-        if(!$this->validarCamposObrigatorios($dados)){
+        if (!$this->validarCamposObrigatorios($dados)) {
             return;
         }
 
-        try{
+        try {
             $id = $this->model->criar($dados);
+            $contato = $this->model->buscarPorId($id);
 
             http_response_code(201);
             echo json_encode([
                 'success' => true,
                 'message' => 'Contato cadastrado com sucesso!',
-                'id' => $id
+                'data' => $contato
             ]);
         } catch (Exception $e) {
             $this->erro($e->getMessage());
         }
     }
+
 
     //atualizar um contato
     public function atualizarContato($id)
@@ -138,7 +140,7 @@ class ContatoController{
             return false;
         }
 
-        $campos = ['nome', 'email', 'data_nascimento', 'id_profissao'];
+        $campos = ['nome', 'email', 'data_nascimento', 'profissao'];
 
         foreach ($campos as $campo) {
             if ($criar && empty($dados[$campo])) {

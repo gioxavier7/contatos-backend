@@ -18,38 +18,40 @@ class Contato{
    }
 
    //retorna todos os contatos cadastrados
-   public function listar(): array
-   {
+    public function listar(): array
+    {
         $sql = "SELECT
-                    c.id,
-                    c.nome,
-                    c.email,
-                    c.data_nascimento,
-                    c.permite_notificacao_email,
-                    p.nome AS profissao
-                FROM contatos c
-                INNER JOIN profissoes p ON p.id = c.id_profissao
-                ORDER BY c.nome";
+                    id,
+                    nome,
+                    email,
+                    data_nascimento,
+                    profissao,
+                    celular,
+                    telefone,
+                    notifica_email
+                FROM contatos
+                ORDER BY nome";
 
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
 
         return $stmt->fetchAll();
-   }
+    }
 
    //busca um contato pelo id
    public function buscarPorId(int $id): ?array
-   {
-        $sql = "SELECT 
-                    c.id,
-                    c.nome,
-                    c.email,
-                    c.data_nascimento,
-                    c.permite_notificacao_email,
-                    p.nome AS profissao
-                FROM contatos c
-                INNER JOIN profissoes p ON p.id = c.id_profissao
-                WHERE c.id = :id
+    {
+        $sql = "SELECT
+                    id,
+                    nome,
+                    email,
+                    data_nascimento,
+                    profissao,
+                    celular,
+                    telefone,
+                    notifica_email
+                FROM contatos
+                WHERE id = :id
                 LIMIT 1";
 
         $stmt = $this->conn->prepare($sql);
@@ -58,28 +60,31 @@ class Contato{
 
         $resultado = $stmt->fetch();
         return $resultado ?: null;
-   }
+    }
 
-   //cadastra um novo contato
-   public function criar(array $dados): int
-   {
+    //cadastrar um novo contato
+    public function criar(array $dados): int
+    {
         $sql = "INSERT INTO contatos
-                    (nome, email, data_nascimento, permite_notificacao_email, id_profissao)
+                    (nome, email, data_nascimento, profissao, celular, telefone, notifica_email)
                 VALUES
-                    (:nome, :email, :data_nascimento, :permite_notificacao_email, :id_profissao)";
+                    (:nome, :email, :data_nascimento, :profissao, :celular, :telefone, :notifica_email)";
 
         $stmt = $this->conn->prepare($sql);
 
         $stmt->bindParam(':nome', $dados['nome']);
         $stmt->bindParam(':email', $dados['email']);
         $stmt->bindParam(':data_nascimento', $dados['data_nascimento']);
-        $stmt->bindParam(':permite_notificacao_email', $dados['permite_notificacao_email'], PDO::PARAM_BOOL);
-        $stmt->bindParam(':id_profissao', $dados['id_profissao'], PDO::PARAM_INT);
+        $stmt->bindParam(':profissao', $dados['profissao']);
+        $stmt->bindParam(':celular', $dados['celular']);
+        $stmt->bindParam(':telefone', $dados['telefone']);
+        $stmt->bindParam(':notifica_email', $dados['notifica_email'], PDO::PARAM_BOOL);
 
         $stmt->execute();
 
         return (int) $this->conn->lastInsertId();
-   }
+    }
+
 
    //atualiza um contato existente
    public function atualizar(int $id, array $dados): bool
