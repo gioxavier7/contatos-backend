@@ -123,4 +123,74 @@ class Contato{
 
         return $stmt->execute();
     }
+
+    //listar contatos com filtro e paginação
+    public function listarComFiltro(
+    ?string $nome,
+    ?string $profissao,
+    int $page,
+    int $limit
+    ): array {
+
+        $offset = ($page - 1) * $limit;
+
+        $sql = "SELECT *
+                FROM contatos
+                WHERE 1 = 1";
+
+        $params = [];
+
+        if ($nome) {
+            $sql .= " AND nome LIKE :nome";
+            $params[':nome'] = "%{$nome}%";
+        }
+
+        if ($profissao) {
+            $sql .= " AND profissao LIKE :profissao";
+            $params[':profissao'] = "%{$profissao}%";
+        }
+
+        $sql .= " ORDER BY nome
+                LIMIT :limit OFFSET :offset";
+
+        $stmt = $this->conn->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+    }
+
+    //paginação
+    public function contarRegistros(?string $nome, ?string $profissao): int
+    {
+        $sql = "SELECT COUNT(*) FROM contatos WHERE 1=1";
+        $params = [];
+
+        if ($nome) {
+            $sql .= " AND nome LIKE :nome";
+            $params[':nome'] = "%{$nome}%";
+        }
+
+        if ($profissao) {
+            $sql .= " AND profissao LIKE :profissao";
+            $params[':profissao'] = "%{$profissao}%";
+        }
+
+        $stmt = $this->conn->prepare($sql);
+
+        foreach ($params as $key => $value) {
+            $stmt->bindValue($key, $value);
+        }
+
+        $stmt->execute();
+
+        return (int) $stmt->fetchColumn();
+    }
 }

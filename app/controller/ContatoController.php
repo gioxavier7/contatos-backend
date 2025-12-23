@@ -20,18 +20,38 @@ class ContatoController{
     //listar todos contatos
     public function listarTodos()
     {
-        try{
-            $contatos = $this->model->listar();
+        try {
+            $nome = $_GET['nome'] ?? null;
+            $profissao = $_GET['profissao'] ?? null;
+
+            $page  = isset($_GET['page']) ? max(1, (int) $_GET['page']) : 1;
+            $limit = isset($_GET['limit']) ? max(1, (int) $_GET['limit']) : 10;
+
+            $contatos = $this->model->listarComFiltro(
+                $nome,
+                $profissao,
+                $page,
+                $limit
+            );
+
+            $total = $this->model->contarRegistros($nome, $profissao);
 
             http_response_code(200);
             echo json_encode([
                 'success' => true,
-                'data' => $contatos
+                'data' => $contatos,
+                'pagination' => [
+                    'page' => $page,
+                    'limit' => $limit,
+                    'total' => $total,
+                    'total_pages' => ceil($total / $limit)
+                ]
             ]);
-        }catch(Exception $e){
-            $this->error($e->getMessage());
+        } catch (Exception $e) {
+            $this->erro($e->getMessage());
         }
-    }
+}
+
 
     //buscar contato específico por id
     public function buscarContato($id)
