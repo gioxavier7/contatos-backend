@@ -1,0 +1,17 @@
+CREATE DATABASE IF NOT EXISTS db_contatos;
+USE db_contatos;
+
+CREATE TABLE contatos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(150) NOT NULL,
+    data_nascimento DATE NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    profissao VARCHAR(150) NOT NULL,
+    celular VARCHAR(20) NOT NULL,
+    telefone VARCHAR(20),
+    possui_whatsapp BOOLEAN DEFAULT FALSE,
+    notifica_sms BOOLEAN DEFAULT FALSE,
+    notifica_email BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
