@@ -42,7 +42,7 @@ class ContatoController{
 
         $contato = $this->model->buscarPorId((int)$id);
 
-        if(!contato){
+        if(!$contato){
             return $this->erro('Contato não encontrado', 404);
         }
 
@@ -81,32 +81,36 @@ class ContatoController{
     //atualizar um contato
     public function atualizarContato($id)
     {
-        if(!is_numeric($id)){
+        if (!is_numeric($id)) {
             return $this->erro('ID inválido', 400);
         }
 
         $dados = json_decode(file_get_contents('php://input'), true);
 
-        if(!$this->validarCamposObrigatorios($dados, false)){
+        if (!$this->validarCamposObrigatorios($dados, false)) {
             return;
         }
 
-        try{
-            $atualizado = $this->model->atualizar((int)$id, $dados);
+        try {
+            $atualizado = $this->model->atualizar((int) $id, $dados);
 
-            if(!$atualizado){
+            if (!$atualizado) {
                 return $this->erro('Erro ao atualizar contato', 500);
             }
+
+            $contatoAtualizado = $this->model->buscarPorId((int) $id);
 
             http_response_code(200);
             echo json_encode([
                 'success' => true,
-                'message' => 'Contato atualizado com sucesso!'
+                'message' => 'Contato atualizado com sucesso!',
+                'data' => $contatoAtualizado
             ]);
         } catch (Exception $e) {
             $this->erro($e->getMessage());
         }
     }
+
 
     //deletar um contato
     public function deletarContato($id)

@@ -85,16 +85,17 @@ class Contato{
         return (int) $this->conn->lastInsertId();
     }
 
-
-   //atualiza um contato existente
+    //atualiza um contato cadastrado
    public function atualizar(int $id, array $dados): bool
     {
         $sql = "UPDATE contatos SET
                     nome = :nome,
                     email = :email,
                     data_nascimento = :data_nascimento,
-                    permite_notificacao_email = :permite_notificacao_email,
-                    id_profissao = :id_profissao
+                    profissao = :profissao,
+                    celular = :celular,
+                    telefone = :telefone,
+                    notifica_email = :notifica_email
                 WHERE id = :id";
 
         $stmt = $this->conn->prepare($sql);
@@ -102,12 +103,15 @@ class Contato{
         $stmt->bindParam(':nome', $dados['nome']);
         $stmt->bindParam(':email', $dados['email']);
         $stmt->bindParam(':data_nascimento', $dados['data_nascimento']);
-        $stmt->bindParam(':permite_notificacao_email', $dados['permite_notificacao_email'], PDO::PARAM_BOOL);
-        $stmt->bindParam(':id_profissao', $dados['id_profissao'], PDO::PARAM_INT);
+        $stmt->bindParam(':profissao', $dados['profissao']);
+        $stmt->bindParam(':celular', $dados['celular']);
+        $stmt->bindParam(':telefone', $dados['telefone']);
+        $stmt->bindParam(':notifica_email', $dados['notifica_email'], PDO::PARAM_BOOL);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
 
         return $stmt->execute();
     }
+
     
      //Remove um contato
     public function deletar(int $id): bool
